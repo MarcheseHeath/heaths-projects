@@ -1,6 +1,8 @@
 # Heaths Projects
 
-A collection of projects completed for school and hobbies.
+A collection of projects completed for school and hobbies. Feel free to use any code that I have uploaded if at all useful to you.
+<br/>Student Email: marcheseh12@tamu.edu
+<br/>Email: marchese.heath@gmail.com
 
 ## Hobby Projects
 
