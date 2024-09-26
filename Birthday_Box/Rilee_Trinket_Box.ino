@@ -1,4 +1,4 @@
-#include <EEPROM.h> // Allows arduino to access and utilize ROM
+#include <EEPROM.h> // Allows arduino to access and utilize ROM 
 #include <LiquidCrystal_I2C.h> // Allows arduino to inilitialize Liquid Crystal Display
 #include <SPI.h> // Auxillary SD Library that improves functionality
 #include "SD.h" // Allows arduino to access SD Card Reader module
