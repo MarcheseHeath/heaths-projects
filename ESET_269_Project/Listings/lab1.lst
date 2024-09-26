@@ -1,0 +1,61 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000                 area             Lab1, code, readonly
+    2 00000000                 export           __main
+    3 00000000         
+    4 00000000         __main  proc
+    5 00000000 4807            ldr              r0, = 0x20000008
+    6 00000002 4908            ldr              r1, = 0xABCD1234
+    7 00000004         
+    8 00000004 6001            str              r1, [r0]
+    9 00000006         
+   10 00000006 4808            ldr              r0, = 0x20002007
+   11 00000008 F101 011F       add              r1, #0x1F
+   12 0000000C 6001            str              r1, [r0]
+   13 0000000E         
+   14 0000000E F101 012F       add              r1, #0x2F
+   15 00000012 F100 0A17       add              r10, r0, #23
+   16 00000016 F8CA 1000       str              r1, [r10]
+   17 0000001A         
+   18 0000001A F8DA 5000       ldr              r5, [r10]
+   19 0000001E         
+   20 0000001E                 endp
+   21 0000001E                 end
+              00 00 20000008 
+              ABCD1234 
+              20002007 
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp.sp --apcs=
+interwork --depend=.\objects\lab1.d -o.\objects\lab1.o -I.\RTE\_Target_1 -IC:\U
+sers\march\AppData\Local\Arm\Packs\ARM\CMSIS\6.1.0\CMSIS\Core\Include -IC:\User
+s\march\AppData\Local\Arm\Packs\TexasInstruments\MSP432P4xx_DFP\3.2.6\Device\In
+clude --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 540" --pr
+edefine="_RTE_ SETA 1" --predefine="__MSP432P401R__ SETA 1" --list=.\listings\l
+ab1.lst Lab1.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+Lab1 00000000
+
+Symbol: Lab1
+   Definitions
+      At line 1 in file Lab1.s
+   Uses
+      None
+Comment: Lab1 unused
+__main 00000000
+
+Symbol: __main
+   Definitions
+      At line 4 in file Lab1.s
+   Uses
+      At line 2 in file Lab1.s
+Comment: __main used once
+2 symbols
+339 symbols in table

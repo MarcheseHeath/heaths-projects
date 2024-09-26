@@ -1,0 +1,124 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: µVision V5.40.0.0
+Copyright (C) 2024 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: Heath Marchese, TAMU, LIC=----
+ 
+Tool Versions:
+Toolchain:       MDK-Lite  Version: 5.40.0.3
+Toolchain Path:  C:\Users\march\AppData\Local\Keil_v5\ARM\ARMCLANG\Bin
+C Compiler:      ArmClang.exe V6.22
+Assembler:       Armasm.exe V6.22
+Linker/Locator:  ArmLink.exe V6.22
+Library Manager: ArmAr.exe V6.22
+Hex Converter:   FromElf.exe V6.22
+CPU DLL:         SARMCM3.DLL V5.40.0.3
+Dialog DLL:      DCM.DLL V1.17.5.0
+Target DLL:      TI_XDS\XDS2CM3.dll V1.0.14.0
+Dialog DLL:      TCM.DLL V1.56.4.0
+ 
+<h2>Project:</h2>
+C:\Users\march\Documents\A&M\Spring_24\ESET_269\Final_Project\Project.uvprojx
+Project File Date:  07/16/2024
+
+<h2>Output:</h2>
+*** Using Compiler 'V6.22', folder: 'C:\Users\march\AppData\Local\Keil_v5\ARM\ARMCLANG\Bin'
+Build target 'Target 1'
+RTE/Device/MSP432P401R/system_msp432p401r.c(46): warning: In file included from...
+C:/Users/march/AppData/Local/Arm/Packs/TexasInstruments/MSP432P4xx_DFP/3.2.6/Device/Include\msp.h(46): warning: In file included from...
+C:/Users/march/AppData/Local/Arm/Packs/TexasInstruments/MSP432P4xx_DFP/3.2.6/Device/Include\msp432p401r.h(235): warning: In file included from...
+C:/Users/march/AppData/Local/Arm/Packs/ARM/CMSIS/6.1.0/CMSIS/Core/Include\core_cm4.h(170): warning: In file included from...
+C:/Users/march/AppData/Local/Arm/Packs/ARM/CMSIS/6.1.0/CMSIS/Core/Include\cmsis_compiler.h(32): warning: In file included from...
+C:/Users/march/AppData/Local/Arm/Packs/ARM/CMSIS/6.1.0/CMSIS/Core/Include\cmsis_armclang.h(31): warning: In file included from...
+C:\Users\march\AppData\Local\Keil_v5\ARM\ARMCLANG\bin\..\include\arm_acle.h(45): error: too many arguments provided to function-like macro invocation
+   45 | static __inline__ void __attribute__((__always_inline__, __nodebug__)) __wfi(void) {
+      |                                                                              ^
+C:/Users/march/AppData/Local/Arm/Packs/TexasInstruments/MSP432P4xx_DFP/3.2.6/Device/Include\msp_compatibility.h(144): note: macro '__wfi' defined here
+  144 | #define __wfi()                         __asm("  wfi")
+      |         ^
+RTE/Device/MSP432P401R/system_msp432p401r.c(46): warning: In file included from...
+C:/Users/march/AppData/Local/Arm/Packs/TexasInstruments/MSP432P4xx_DFP/3.2.6/Device/Include\msp.h(46): warning: In file included from...
+C:/Users/march/AppData/Local/Arm/Packs/TexasInstruments/MSP432P4xx_DFP/3.2.6/Device/Include\msp432p401r.h(235): warning: In file included from...
+C:/Users/march/AppData/Local/Arm/Packs/ARM/CMSIS/6.1.0/CMSIS/Core/Include\core_cm4.h(170): warning: In file included from...
+C:/Users/march/AppData/Local/Arm/Packs/ARM/CMSIS/6.1.0/CMSIS/Core/Include\cmsis_compiler.h(32): warning: In file included from...
+C:/Users/march/AppData/Local/Arm/Packs/ARM/CMSIS/6.1.0/CMSIS/Core/Include\cmsis_armclang.h(31): warning: In file included from...
+C:\Users\march\AppData\Local\Keil_v5\ARM\ARMCLANG\bin\..\include\arm_acle.h(45): error: 'inline' can only appear on functions
+   45 | static __inline__ void __attribute__((__always_inline__, __nodebug__)) __wfi(void) {
+      |        ^
+C:\Users\march\AppData\Local\Keil_v5\ARM\ARMCLANG\bin\..\include\arm_acle.h(45): error: variable has incomplete type 'void'
+   45 | static __inline__ void __attribute__((__always_inline__, __nodebug__)) __wfi(void) {
+      |                                                                        ^
+C:\Users\march\AppData\Local\Keil_v5\ARM\ARMCLANG\bin\..\include\arm_acle.h(45): error: expected ';' after top level declarator
+   45 | static __inline__ void __attribute__((__always_inline__, __nodebug__)) __wfi(void) {
+      |                                                                             ^
+4 errors generated.
+compiling system_msp432p401r.c...
+main.c(3): warning: In file included from...
+C:/Users/march/AppData/Local/Arm/Packs/TexasInstruments/MSP432P4xx_DFP/3.2.6/Device/Include\msp.h(46): warning: In file included from...
+C:/Users/march/AppData/Local/Arm/Packs/TexasInstruments/MSP432P4xx_DFP/3.2.6/Device/Include\msp432p401r.h(235): warning: In file included from...
+C:/Users/march/AppData/Local/Arm/Packs/ARM/CMSIS/6.1.0/CMSIS/Core/Include\core_cm4.h(170): warning: In file included from...
+C:/Users/march/AppData/Local/Arm/Packs/ARM/CMSIS/6.1.0/CMSIS/Core/Include\cmsis_compiler.h(32): warning: In file included from...
+C:/Users/march/AppData/Local/Arm/Packs/ARM/CMSIS/6.1.0/CMSIS/Core/Include\cmsis_armclang.h(31): warning: In file included from...
+C:\Users\march\AppData\Local\Keil_v5\ARM\ARMCLANG\bin\..\include\arm_acle.h(45): error: too many arguments provided to function-like macro invocation
+   45 | static __inline__ void __attribute__((__always_inline__, __nodebug__)) __wfi(void) {
+      |                                                                              ^
+C:/Users/march/AppData/Local/Arm/Packs/TexasInstruments/MSP432P4xx_DFP/3.2.6/Device/Include\msp_compatibility.h(144): note: macro '__wfi' defined here
+  144 | #define __wfi()                         __asm("  wfi")
+      |         ^
+main.c(3): warning: In file included from...
+C:/Users/march/AppData/Local/Arm/Packs/TexasInstruments/MSP432P4xx_DFP/3.2.6/Device/Include\msp.h(46): warning: In file included from...
+C:/Users/march/AppData/Local/Arm/Packs/TexasInstruments/MSP432P4xx_DFP/3.2.6/Device/Include\msp432p401r.h(235): warning: In file included from...
+C:/Users/march/AppData/Local/Arm/Packs/ARM/CMSIS/6.1.0/CMSIS/Core/Include\core_cm4.h(170): warning: In file included from...
+C:/Users/march/AppData/Local/Arm/Packs/ARM/CMSIS/6.1.0/CMSIS/Core/Include\cmsis_compiler.h(32): warning: In file included from...
+C:/Users/march/AppData/Local/Arm/Packs/ARM/CMSIS/6.1.0/CMSIS/Core/Include\cmsis_armclang.h(31): warning: In file included from...
+C:\Users\march\AppData\Local\Keil_v5\ARM\ARMCLANG\bin\..\include\arm_acle.h(45): error: 'inline' can only appear on functions
+   45 | static __inline__ void __attribute__((__always_inline__, __nodebug__)) __wfi(void) {
+      |        ^
+C:\Users\march\AppData\Local\Keil_v5\ARM\ARMCLANG\bin\..\include\arm_acle.h(45): error: variable has incomplete type 'void'
+   45 | static __inline__ void __attribute__((__always_inline__, __nodebug__)) __wfi(void) {
+      |                                                                        ^
+C:\Users\march\AppData\Local\Keil_v5\ARM\ARMCLANG\bin\..\include\arm_acle.h(45): error: expected ';' after top level declarator
+   45 | static __inline__ void __attribute__((__always_inline__, __nodebug__)) __wfi(void) {
+      |                                                                             ^
+4 errors generated.
+compiling main.c...
+assembling startup_msp432p401r_uvision.s...
+".\Objects\Project.axf" - 8 Error(s), 0 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                https://www.keil.com/pack/ARM.CMSIS.6.1.0.pack
+                ARM::CMSIS@6.1.0
+                CMSIS (Common Microcontroller Software Interface Standard)
+   * Component: CORE Version: 6.1.0
+
+Package Vendor: TexasInstruments
+                http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/msp432cmsis/latest/exports/TexasInstruments.MSP432P4xx_DFP.3.2.6.pack
+                TexasInstruments::MSP432P4xx_DFP@3.2.6
+                Device Family Pack for Texas Instruments SimpleLink(TM) MSP432 Series
+   * Component: Startup Version: 3.2.2
+
+<h2>Collection of Component include folders:</h2>
+  ./RTE/_Target_1
+  C:/Users/march/AppData/Local/Arm/Packs/ARM/CMSIS/6.1.0/CMSIS/Core/Include
+  C:/Users/march/AppData/Local/Arm/Packs/TexasInstruments/MSP432P4xx_DFP/3.2.6/Device/Include
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE@6.1.0
+
+   * Component: TexasInstruments::Device:Startup@3.2.2
+      Source file:   Device/Source/startup_msp432p401r_uvision.s
+      Include file:  Device/Include/msp_compatibility.h
+      Source file:   Examples/EmptyMain/main.c
+      Source file:   Examples/BlinkLED/blinkLED.c
+      Source file:   Device/Source/system_msp432p401r.c
+Target not created.
+Build Time Elapsed:  00:00:00
+</pre>
+</body>
+</html>
