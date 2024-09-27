@@ -17,6 +17,7 @@ A program that is capable of performing calculations for equations across many d
 * *Project type: Arduino IDE (.ino)*
 
 Device that can be used to perform multiple tasks that are common for a Dungeons and Dragons DM. This project incorporates a button matrix and 128x64 pixel OLED.
+<br/>Demo: https://youtube.com/shorts/bn4hZjJ3evo
 
 ### [Birthday Box (for my spouse)](../main/Birthday_Box)
 
@@ -56,6 +57,7 @@ A simple memory game that uses GPIO pins to accept button inputs, control severa
 * *Project type: Analog Circuit*
 
 This project applies the knowledge learned in my Analog Electronics course by utilizing properties of operational amplifiers, diodes, and transistors to create a simple analog piano that is capable of playing a range of notes.
+<br/>Demo: https://youtube.com/shorts/6o9ZUImQ6eg
 
 ### [Mobile Robotics Labwork - MXET 300 Contributions](../main/MXET_300)
 
@@ -63,8 +65,10 @@ This project applies the knowledge learned in my Analog Electronics course by ut
 
 A collection of work done for my Mechantronics labs. The work includes labs that cover many topics on establishing a working mobile robot along with my course project.
 
+
 ### [Motorized Double Pendulum - MXET 375 Project](../main/MXET_375_Project)
 
 * *Project type: Arduino IDE (.ino)*
 
 A motorized double pendulum that was designed and constructed so that motion data could be measured to describe the system.
+<br/>Demo: https://youtu.be/3PyOYEPMs_4
