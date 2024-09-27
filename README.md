@@ -35,7 +35,7 @@ A simple program that can convert values between many different formats that are
 * *Project type: Music (.mp3)*
 
 I will sometimes *try* to make music for fun. You are welcome to listen to it anytime.
-Youtube: https://www.youtube.com/@bubbacreates
+<br/>Youtube: https://www.youtube.com/@bubbacreates
 
 ## School Projects
 
