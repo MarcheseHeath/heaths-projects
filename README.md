@@ -31,7 +31,7 @@ A box that can read user specified audio files from an SD card reader to play wh
 
 A simple program that can convert values between many different formats that are typical for digital electronics. (eg. Binary <-> Decimal, Binary <-> IEEE754, Decimal <-> Hexadecimal, etc.)
 
-### [Music](../main/Music)
+### Music
 
 * *Project type: Music (.mp3)*
 
