@@ -59,6 +59,12 @@ A simple memory game that uses GPIO pins to accept button inputs, control severa
 This project applies the knowledge learned in my Analog Electronics course by utilizing properties of operational amplifiers, diodes, and transistors to create a simple analog piano that is capable of playing a range of notes.
 <br/>Demo: https://youtube.com/shorts/6o9ZUImQ6eg
 
+### [Drone Pitch Control - ESET 462 Project](../main/ESET_462_Project)
+
+* *Project type: Arduino IDE (.ino)*
+
+This project uses a PID controller to balance a beam using an MPU6050 gyroscope/accelerometer module. It balances by using propellors attached to either side of the beam so that the system can be representative of a drone pitch balancing system.
+
 ### [Mobile Robotics Labwork - MXET 300 Contributions](../main/MXET_300)
 
 * *Project type: Virtual Studio Code (.py) and SCUTTLE Robotics Kit*
