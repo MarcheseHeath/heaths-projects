@@ -116,7 +116,7 @@ void setup() {
   xTaskCreate(                // Control Task
     ControlTask,              // Function
     "Control Task",           // Task Label
-    128,                      // Stack Size
+    1024,                     // Stack Size
     NULL,                     // Pointer to Structure Data
     2,                        // Priority
     NULL);                    // Pointer to Task Handle
@@ -140,7 +140,6 @@ void InputTask(void* parameter) {         // Read User Input for Control
   while(true) {
     //Wait for Input
     if(Serial.available() > 0) {
-      Serial.print("Please input integer (0-1023) for desired angle (-36 to 36 degrees): ");
       userInput = Serial.parseInt(); //Read Int from Input
       if(userInput >= 0 && userInput <= 1023) {
         // Process Valid Range
@@ -149,7 +148,7 @@ void InputTask(void* parameter) {         // Read User Input for Control
       }
       else {
         // Handle Invalid Range
-        Serial.println("Invalid input. Enter a number between 0 and 1023.");
+        Serial.println("Invalid input. Enter a number between 0 and 1023. (-36 to 36 degrees)");
       }
     }
 
@@ -195,8 +194,8 @@ void MotorTask(void *parameter) {         // Send Controlled PID Signal to motor
     uPWM = receivedSpeed;
 
     /* PROCESS CONTROLLED SPEED TO FIND TWO MOTOR SPEEDS */
-    speedA = 127 + uPWM;
-    speedB = 127 - uPWM;
+    speedA = 192 + uPWM;
+    speedB = 192 - uPWM;
 
     // Adjust Motor Speeds to Remove System Error
     motors.setSpeedA(speedA);
@@ -211,7 +210,7 @@ void MotorTask(void *parameter) {         // Send Controlled PID Signal to motor
 void ControlTask(void *parameter) {       // Process Data and Determine Necessary Controls
   (void) parameter;
   int receivedInput;
-  int receivedAngle;
+  float receivedAngle;
   int motorSpeed;
   
   while (true) {
@@ -244,7 +243,7 @@ void ControlTask(void *parameter) {       // Process Data and Determine Necessar
 
     // Constrain Control For Motor Signal
     u = constrain(u, -100, 100);
-    motorSpeed = (int)(abs(u) * 0.62);
+    motorSpeed = (int)(abs(u) * 0.63);
 
     // Store Previous Error and Control
     e2 = e1;
