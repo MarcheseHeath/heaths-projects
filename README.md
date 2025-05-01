@@ -64,6 +64,7 @@ This project applies the knowledge learned in my Analog Electronics course by ut
 * *Project type: Arduino IDE (.ino)*
 
 This project uses a PID controller to balance a beam using an MPU6050 gyroscope/accelerometer module. It balances by using propellors attached to either side of the beam so that the system can be representative of a drone pitch balancing system.
+<br/>Demo: https://www.youtube.com/watch?v=3KDRZVBq2bk
 
 ### [Mobile Robotics Labwork - MXET 300 Contributions](../main/MXET_300)
 
