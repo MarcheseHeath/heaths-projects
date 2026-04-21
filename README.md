@@ -190,6 +190,33 @@ This project demonstrates GUI development, modular software design, and scientif
 
 ## School Projects
 
+### [Smart Parking Occupancy Tracker (SPOT) - Capstone Project, Fall '25](../main/Capstone_Project)
+
+* *Project type: Arduino IDE (.ino)*
+
+This project implements a distributed IoT parking and sensing system built on ESP32 Zigbee devices, combining embedded sensor acquisition, mesh networking, and cloud telemetry via Azure IoT Hub. The system is composed of a Zigbee Coordinator (gateway), Zigbee End Device (sensor node), and a secure authentication layer that dynamically generates SAS tokens for cloud communication.
+
+The architecture enables real-time distance sensing using a VL53L0X time-of-flight sensor, Zigbee-based data aggregation, and cloud reporting without requiring device reflashing after power loss.
+- Zigbee Coordinator (Gateway) – Aggregates sensor data from end devices and forwards telemetry to Azure IoT Hub via MQTT
+- Zigbee End Device (Sensor Node) – Captures time-of-flight distance measurements and transmits them over Zigbee mesh networking
+- Time-of-Flight Sensing – Uses VL53L0X sensor for real-time distance-to-object measurements (e.g., vehicle detection)
+- Dynamic Cloud Authentication – Generates Azure SAS tokens at runtime using HMAC-SHA256, eliminating manual reconfiguration after reboot
+- UART Bridge Communication – Transfers processed sensor values between coordinator and gateway layer
+- FreeRTOS Tasking (End Device) – Concurrent tasks handle sensing, display updates, and button input without blocking execution
+- OLED Diagnostics Interface – Displays system status, battery indicators, sensor readings, and device ID
+- Adaptive Network Management – Automatically reopens Zigbee network if no end devices are detected
+
+Key features include:
+- Fully wireless Zigbee mesh sensor-to-gateway communication
+- Secure, auto-refreshing Azure IoT authentication (no reflashing required)
+- Real-time environmental sensing with calibrated distance-to-occupancy mapping
+- Modular embedded design separating sensing, networking, UI, and cloud layers
+- Fault-tolerant reconnection logic for both Zigbee and cloud connectivity
+
+This project demonstrates embedded IoT system design, multi-protocol networking (Zigbee + MQTT), real-time sensor processing, and secure cloud integration using dynamic authentication on resource-constrained microcontrollers.
+
+<br/>Demo: https://youtu.be/wk3OdglrdMY
+
 ### [ROS2 Color-Based Robotic Sorting - MXET 400 Project, Spring '25](../main/MXET_400_Project)
 
 * *Project type: ROS2 (.py)*
@@ -325,6 +352,14 @@ This project highlights core concepts in analog electronics, including oscillato
 <br/>Demo: https://youtube.com/shorts/6o9ZUImQ6eg
 
 ## Other
+
+### 3D Printing
+
+* *Project type: 3D Modeling (.stl)*
+
+I like to 3D print things and sometimes I remember to get pictures.
+
+<br/>3D Printing Images: https://www.dropbox.com/scl/fo/oq1wqhtzj5fmjfgn7iqhv/ALXrbN7vOnTL8d6Vaw_4Xzw?rlkey=fd2yv3mldlqyzqb6exmruhfus&st=xppggboq&dl=0
 
 ### Music
 
