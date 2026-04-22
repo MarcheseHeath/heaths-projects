@@ -3,7 +3,7 @@
 /*--------------------------------------------------------------------------------------*/
 
 // Libraries
-#include <Stdio.h>        // Standard I/O Lib
+#include <math.h>         // Math Functions
 #include <Wire.h>         // IC2 Lib
 #include <U8g2lib.h>      // Display Lib
 #include <ESP32Servo.h>   // Servo Lib
@@ -24,14 +24,16 @@ ESP32PWM pwm;
 int minUs = 1000;
 int maxUs = 2000;
 
-// Raw pot values
-uint16_t braw, e1raw, e2raw, sraw, graw;
-
 // Joint Angles (in degrees)
-int bpos, e1pos, e2pos, spos, gpos;
+typedef struct {
+  int bpos;
+  int e1pos;
+  int e2pos;
+  int spos;
+  int gpos;
+} JointData;
 
-// Stepper variables
-int currentBasePos = 0; // Actual base pos
+JointData current = {90,90,90,90,45};
 
 int stepIndex = 0;
 const int steps[4][4] = 
@@ -42,9 +44,35 @@ const int steps[4][4] =
   {0,1,0,1}
 };
 
+// Inverse Kinematics Variables and Parameters
+const float L1 = 45.0; // mm
+const float L2 = 50.0;
 
-// Save pos state
-bool saveState = false;
+float targetX = 75;
+float targetY = 50;
+
+// Playback Variables and Parameters
+#define MAX_RECORD 100
+
+JointData recordBuffer[MAX_RECORD];
+int recordIndex = 0;
+bool isRecording = false;
+bool isPlaying = false;
+int playIndex = 0;
+
+// Queue Architecture for Multi-Tasking
+QueueHandle_t driverQueue;
+QueueHandle_t displayQueue;
+
+// Machine Modes
+typedef enum {
+  MODE_POTS,
+  MODE_IK,
+  MODE_DANCE,
+  MODE_PLAYBACK
+} ControlMode;
+
+volatile ControlMode mode = MODE_POTS;
 
 // Pin definitions
 #define BASE_POT 32
@@ -52,11 +80,14 @@ bool saveState = false;
 #define ELBOW2_POT 25
 #define SWIVEL_POT 26
 #define GRIPPER_POT 27
+
 #define SAVE 13
+
 #define ELBOW1_PIN 19
 #define ELBOW2_PIN 18
 #define SWIVEL_PIN 17
 #define GRIPPER_PIN 16
+
 #define STEP1 4
 #define STEP2 0
 #define STEP3 2
@@ -71,12 +102,13 @@ void setup()
   // Init I2C pins and Serial
   Wire.begin(21,22);
   Serial.begin(115200);
-  delay(1000);
+
+  delay(100);
   
   // Init display
   u8g2.begin();
   bootAnimation();
-  delay(1000);
+  delay(100);
 
   // Init button
   pinMode(SAVE, INPUT_PULLUP);
@@ -99,10 +131,22 @@ void setup()
   pinMode(STEP3, OUTPUT);
   pinMode(STEP4, OUTPUT);
 
-  // Potentiometer Data Aquisiton Task
+  driverQueue  = xQueueCreate(1, sizeof(JointData));
+  displayQueue = xQueueCreate(1, sizeof(JointData));
+
+  // Data Acquisiton Task
   xTaskCreate(
-    Aquisition,          // Task function
-    "AquisitionTask",    // Name
+    Acquisition,          // Task function
+    "AcquisitionTask",    // Name
+    2048,                // Stack size
+    NULL,                // Parameters
+    5,                   // Priority
+    NULL);               // Task handle
+
+  // Command Task
+  xTaskCreate(
+    Commands,            // Task function
+    "CommandTask",       // Name
     2048,                // Stack size
     NULL,                // Parameters
     5,                   // Priority
@@ -133,42 +177,138 @@ void loop()
 }
 
 /*--------------------------------------------------------------------------------------*/
-/*----------------------------- DATA AQUISITION TASK -----------------------------------*/
+/*----------------------------- DATA ACQUISITION TASK ----------------------------------*/
 /*--------------------------------------------------------------------------------------*/
 
-static void Aquisition(void *arg) 
+static void Acquisition(void *arg) 
 {
-  bool lastPress = HIGH;
-  unsigned long lastDebounce = 0;
+  JointData data;
 
   for (;;)
-  {
-    unsigned long now = millis();
-    
-    // Read raw ADC (0–4095 on ESP32)
-    braw = analogRead(BASE_POT);
-    e1raw = analogRead(ELBOW1_POT);
-    e2raw = analogRead(ELBOW2_POT);
-    sraw = analogRead(SWIVEL_POT);
-    graw = analogRead(GRIPPER_POT);
-
-    // Map to angles (0–180)
-    bpos  = map(braw,  0, 4095, 0, 180);
-    e1pos = map(e1raw, 0, 4095, 0, 180);
-    e2pos = map(e2raw, 0, 4095, 0, 180);
-    spos  = map(sraw,  0, 4095, 0, 180);
-    gpos  = map(graw,  0, 4095, 0, 180);
-
-    // Save state button (hold for 3 seconds)
-    bool press = digitalRead(SAVE);
-    if (lastPress == HIGH && press == LOW && now - lastDebounce > 3000) 
+  {    
+    // POTS Mode
+    if (mode == MODE_POTS)
     {
-      saveState = !saveState; // Invert save state
-
-      lastDebounce = now;
+      // Map to angles (0–180)
+      data.bpos  = map(analogRead(BASE_POT),   0, 4095, 0, 180);
+      data.e1pos = map(analogRead(ELBOW1_POT), 0, 4095, 0, 180);
+      data.e2pos = map(analogRead(ELBOW2_POT), 0, 4095, 0, 180);
+      data.spos  = map(analogRead(SWIVEL_POT), 0, 4095, 0, 180);
+      data.gpos  = map(analogRead(GRIPPER_POT),0, 4095, 0, 180);
     }
 
-    vTaskDelay(10 / portTICK_PERIOD_MS);
+    // IK Mode
+    else if (mode == MODE_IK)
+    {
+      inverseKinematics(&data);
+    }
+
+    // DANCE Mode
+    else if (mode == MODE_DANCE)
+    {
+      robotDance(&data);
+    }
+
+    // PLAYBACK Mode
+    else if (mode == MODE_PLAYBACK && isPlaying && recordIndex > 0)
+    {
+      data = recordBuffer[playIndex++];
+      if (playIndex >= recordIndex) playIndex = 0;
+    }
+
+    // PLAYBACK Recording
+    if (mode == MODE_PLAYBACK && isRecording && digitalRead(SAVE) == LOW)
+    {
+      if (recordIndex < MAX_RECORD)
+      {
+        recordBuffer[recordIndex++] = data;
+        Serial.println("Saved position");
+        vTaskDelay(pdMS_TO_TICKS(300));
+      }
+    }
+
+    // Send latest data (overwrite if full)
+    xQueueOverwrite(driverQueue, &data);
+    xQueueOverwrite(displayQueue, &data);
+
+    vTaskDelay(pdMS_TO_TICKS(20));
+  }
+}
+
+void inverseKinematics(JointData *data)
+{
+  float x = targetX;
+  float y = targetY;
+
+  float d = sqrt(x*x + y*y);  // total distance from base joint
+
+  d = constrain(d, fabs(L1 - L2), L1 + L2); // Verify robot can achieve distance
+
+  float cos_theta2 = (x*x + y*y - L1*L1 - L2*L2) / (2 * L1 * L2);
+  cos_theta2 = constrain(cos_theta2, -1, 1);
+
+  float theta2 = acos(cos_theta2);
+  float theta1 = atan2(y, x) - atan2(L2 * sin(theta2), L1 + L2 * cos(theta2));
+
+  data->e1pos = degrees(theta1) + 90;
+  data->e2pos = degrees(theta2) + 90;
+
+  data->bpos = 90;
+  data->spos = 120;
+  data->gpos = 120;
+}
+
+/*--------------------------------------------------------------------------------------*/
+/*--------------------------------- COMMAND TASK ---------------------------------------*/
+/*--------------------------------------------------------------------------------------*/
+
+static void Commands(void *arg)
+{
+  for (;;)
+  {
+    if (Serial.available())
+    {
+      String input = Serial.readStringUntil('\n');
+      input.trim();
+
+      if (input == "run_ik") mode = MODE_IK;
+      else if (input == "run_pots") mode = MODE_POTS;
+      else if (input == "run_dance") mode = MODE_DANCE;
+      
+      else if (input.startsWith("ik "))
+      {
+        sscanf(input.c_str(), "ik %f %f", &targetX, &targetY);
+        mode = MODE_IK;
+        Serial.printf("Target: %.1f %.1f\n", targetX, targetY);
+      }
+
+      else if (input == "playback_record")
+      {
+        recordIndex = 0;
+        isRecording = true;
+        Serial.println("Recording...");
+      }
+      else if (input == "playback_stop")
+      {
+        isRecording = false;
+        isPlaying = false;
+        Serial.println("Stopped");
+      }
+      else if (input == "playback")
+      {
+        mode = MODE_PLAYBACK;
+        playIndex = 0;
+        isPlaying = true;
+        Serial.println("Playback...");
+      }
+
+      else
+      {
+        Serial.println("Invalid command");
+      }
+    }
+
+    vTaskDelay(pdMS_TO_TICKS(50));
   }
 }
 
@@ -178,28 +318,42 @@ static void Aquisition(void *arg)
 
 static void Driver(void *arg) 
 {
+  JointData data;
+
   for (;;)
   {
-    elbow1.write(e1pos);
-    elbow2.write(e2pos);
-    swivel.write(spos);
-    gripper.write(gpos);
-
-
-
-    if (currentBasePos < bpos)
+    if (xQueueReceive(driverQueue, &data, portMAX_DELAY) == pdTRUE)
     {
-      stepMotor(1);
-      currentBasePos++;
-    }
-    else if (currentBasePos > bpos)
-    {
-      stepMotor(-1);
-      currentBasePos--;
+      current.e1pos = smoothStep(current.e1pos, data.e1pos, 2);
+      current.e2pos = smoothStep(current.e2pos, data.e2pos, 2);
+      current.spos  = smoothStep(current.spos,  data.spos,  2);
+      current.gpos  = smoothStep(current.gpos,  data.gpos,  2);
+
+      elbow1.write(current.e1pos);
+      elbow2.write(current.e2pos);
+      swivel.write(current.spos);
+      gripper.write(current.gpos);
+
+      if (current.bpos < data.bpos)
+      {
+        stepMotor(1);
+        current.bpos++;
+      }
+      else if (current.bpos > data.bpos)
+      {
+        stepMotor(-1);
+        current.bpos--;
+      }
     }
 
-    vTaskDelay(10 / portTICK_PERIOD_MS);
+    vTaskDelay(pdMS_TO_TICKS(5));
   }
+}
+
+int smoothStep(int current, int target, int step)
+{
+  if (abs(target - current) < step) return target;
+  return current + (target > current ? step : -step);
 }
 
 void stepMotor(int dir)
@@ -213,6 +367,20 @@ void stepMotor(int dir)
   digitalWrite(STEP2, steps[stepIndex][1]);
   digitalWrite(STEP3, steps[stepIndex][2]);
   digitalWrite(STEP4, steps[stepIndex][3]);
+
+  delayMicroseconds(1500);
+}
+
+void robotDance(JointData *data)
+{
+  static int t = 0;
+  t++;
+
+  data->bpos  = (t % 180);
+  data->e1pos = 90 + 30 * sin(t * 0.1);
+  data->e2pos = 90 + 30 * cos(t * 0.1);
+  data->spos  = 90;
+  data->gpos  = (t % 60);
 }
 
 /*--------------------------------------------------------------------------------------*/
@@ -221,46 +389,49 @@ void stepMotor(int dir)
 
 static void Display(void *arg) 
 {
+  JointData data;
+  
   for (;;)
   {
-    u8g2.clearBuffer(); // Clear internal memory
-    char outputString[10];
+    if (xQueueReceive(displayQueue, &data, portMAX_DELAY) == pdTRUE)
+    {
+      u8g2.clearBuffer(); // Clear internal memory
 
-    u8g2.setFont(u8g2_font_6x10_tf);  // Set title font
-    u8g2.drawStr(0, 10, "Heath - Robot Arm v1.00"); // Program title
-    u8g2.drawHLine(0, 12, 128);  // Horizontal line under title
+      u8g2.setFont(u8g2_font_6x10_tf);  // Set title font
+      u8g2.drawStr(0, 10, "Robot Arm v2.00"); // Program title
+      u8g2.drawHLine(0, 12, 128);  // Horizontal line under title
 
-    // Centered content inside box
-    u8g2.setFont(u8g2_font_4x6_tf); // Set section font
+      // Centered content inside box
+      u8g2.setFont(u8g2_font_4x6_tf); // Set section font
 
-    u8g2.setCursor(10, 24);
-    u8g2.print("Base: ");
-    sprintf(outputString, "%d Deg", currentBasePos);
-    u8g2.print(outputString);
-    
-    u8g2.setCursor(10, 34);
-    u8g2.print("Elbow 1: ");
-    sprintf(outputString, "%d Deg", e1pos);
-    u8g2.print(outputString);
-    
-    u8g2.setCursor(10, 44);
-    u8g2.print("Elbow 2: ");
-    sprintf(outputString, "%d Deg", e2pos);
-    u8g2.print(outputString);
+      const char *labels[] = {
+        "Base: ",
+        "Elbow 1: ",
+        "Elbow 2: ",
+        "Swivel: ",
+        "Gripper: "
+      };
 
-    u8g2.setCursor(10, 54);
-    u8g2.print("Swivel: ");
-    sprintf(outputString, "%d Deg", bpos);
-    u8g2.print(outputString);
+      const int values[] = {
+        data.bpos,
+        data.e1pos,
+        data.e2pos,
+        data.spos,
+        data.gpos
+      };
 
-    u8g2.setCursor(10, 64);
-    u8g2.print("Gripper: ");
-    sprintf(outputString, "%d Deg", gpos);
-    u8g2.print(outputString);
+      for (int i = 0; i < 5; i++)
+      {
+        u8g2.setCursor(10, 24 + (i * 10));
+        u8g2.print(labels[i]);
+        u8g2.print(values[i]);
+        u8g2.print(" Deg");
+      }
+    }
 
     u8g2.sendBuffer();
 
-    vTaskDelay(10 / portTICK_PERIOD_MS);
+    vTaskDelay(pdMS_TO_TICKS(10));
   }
 }
 
